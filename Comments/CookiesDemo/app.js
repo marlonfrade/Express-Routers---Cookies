@@ -5,7 +5,10 @@ const port = 3000;
 // npm i cookie-parser
 const cookieParser = require("cookie-parser");
 //Execute it
-app.use(cookieParser());
+// app.use(cookieParser());
+
+// This new execute method below use a param to sign all the cookies we sent and we get
+app.use(cookieParser("thisismysecret"));
 
 // We configure the route and the information we want to store
 
@@ -46,6 +49,30 @@ app.get("/setName", (req, res) => {
 // And if you want to update the information, just change it on the code params, and refresh the page
 
 // After you start de application, you can use Postman to see how it looks when you set a GET request to the path above, in the cookies tab
+
+// Creating a new route to show about signin cookies
+app.get("/getsignedcookie", (req, res) => {
+  // Now we set the cookie and we can pass a third param
+  res.cookie("fruit", "grape", { signed: true });
+  res.send("Signed You a cookie");
+});
+// To test it we go to this path on localhost, then we verify on the dev tools in the cookies tab
+
+// Now we create a route to verify a cookie, in this example is the cookie that we sent on the previous function
+app.get("/verifycookies", (req, res) => {
+  // Verification
+  // console.log(req.cookies);
+  // or
+  // res.send(req.cookies);
+
+  // If we go to this path, we'll see that our cookie wasn't push to the cookies information
+  // That's because to do it, we need to set a secret key that we use when execute the cookie-parser,
+  // and makes this route protected by the { signed: true } on line 56
+
+  // We can use this tp view the signed cookies protected by the secret key
+  console.log(req.signedCookies);
+  res.send(req.signedCookies);
+});
 
 app.listen(port, () => {
   console.log(`Serving on port: ${port}`);
